@@ -50,11 +50,11 @@ public class Dataset_R {
                 Dataset_R d = new Dataset_R();
                 content = new StringBuilder();
                 String top_left = d.generate_top_left_coordinate(); // randomly generate the top left coordinate
-                content.append("<" + 'r' + i + ", ");
+                content.append("<" + 'r' + i + ",");
                 String bottom_left = d.generate_bottom_left_coordinate();
                 d.generate_bottom_right_coordinate();
                 d.generate_top_left_coordinate();
-                content.append(d.x_bottom_left + ", " + d.y_bottom_left + ", " + d.x_top_right + ", " + d.y_top_right + ">");
+                content.append(d.x_bottom_left + "," + d.y_bottom_left + "," + d.x_top_right + "," + d.y_top_right + ">");
                 bw.write(content.toString());
                 bw.newLine();
             }

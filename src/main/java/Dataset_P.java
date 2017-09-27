@@ -21,7 +21,7 @@ public class Dataset_P {
                 bw = new BufferedWriter(fw);
                 for (int i = 1; i <= 10000; i++) {
                     content = new StringBuilder();
-                    content.append("<" + d.generate_coordinate() + ", " + d.generate_coordinate() + ">");
+                    content.append("<" + d.generate_coordinate() + "," + d.generate_coordinate() + ">");
                     bw.write(content.toString());
                     bw.newLine();
                 }
