@@ -19,7 +19,7 @@ public class Dataset_P {
                 StringBuilder content;
                 fw = new FileWriter("./input/Dataset_P.txt");
                 bw = new BufferedWriter(fw);
-                for (int i = 1; i <= 10000; i++) {
+                for (int i = 1; i <= 10000000; i++) {
                     content = new StringBuilder();
                     content.append("<" + d.generate_coordinate() + "," + d.generate_coordinate() + ">");
                     bw.write(content.toString());

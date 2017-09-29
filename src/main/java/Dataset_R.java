@@ -46,7 +46,7 @@ public class Dataset_R {
             StringBuilder content;
             fw = new FileWriter("./input/Dataset_R.txt");
             bw = new BufferedWriter(fw);
-            for (int i = 1; i <= 5000000; i++) {
+            for (int i = 1; i <= 500000; i++) {
                 Dataset_R d = new Dataset_R();
                 content = new StringBuilder();
                 String top_left = d.generate_top_left_coordinate(); // randomly generate the top left coordinate

@@ -19,7 +19,7 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 public class Spatial_Join {
     private static Map<String, String> coordinate = new HashMap<String, String>();
-
+    static int count = 0;
     public static class SpatialJoinMapper extends Mapper<Object, Text, Text, Text>{
 
 //        private final static IntWritable one = new IntWritable(1);
@@ -51,9 +51,10 @@ public class Spatial_Join {
                 String line;
                 while ((line = br.readLine()) != null) {
 //                    System.out.println(line.toString());
-                    String[] str = line.toString().substring(1, line.length() - 1).split(",");
+                    System.out.println(line);
+                    String[] str = line.substring(1, line.length() - 1).split(",");
                     StringBuilder tmp = new StringBuilder();
-                    tmp.append(str[3] + ',' + str[1] + ',' + str[4] + ',' + str[2]);
+                    tmp.append(str[1] + ',' + str[2] + ',' + str[3] + ',' + str[4]);
                     coordinate.put(str[0], tmp.toString());
                 }
             } catch (IOException e) {
@@ -64,12 +65,13 @@ public class Spatial_Join {
 
     public static class SpatialJoinReducer extends Reducer<Text, Text, Text, NullWritable>{
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            count++;
             for(Text text : values) {
                 int x = Integer.valueOf(key.toString());
                 int y = Integer.valueOf(text.toString());
+//                System.out.println(x + "/" + y);
+//                System.out.println("------------");
                 String tmp = isContained(x, y);
-//                System.out.println(tmp);
-//                System.out.println("*****");
                 if(tmp.length() != 0) {
                     context.write(new Text(tmp), NullWritable.get());
                 }
@@ -82,9 +84,10 @@ public class Spatial_Join {
                 int x_right = Integer.valueOf(str[2]);
                 int y_left = Integer.valueOf(str[1]);
                 int y_right = Integer.valueOf(str[3]);
-                System.out.println(x_left + "/" + x_right + "/" + y_left + "/" + y_right);
-                System.out.println(x_coordinate + "/" + y_coordinate);
+
                 if(x_coordinate >= x_left && x_coordinate <= x_right && y_coordinate >= y_left && y_coordinate <= y_right) {
+//                    System.out.println(entry.getKey() + "/" + x_left + "/" + x_right + "/" + y_left + "/" + y_right);
+//                    System.out.println(x_coordinate + "/" + y_coordinate);
                     StringBuilder res = new StringBuilder();
                     res.append("<" + entry.getKey() + ',' + '(' + x_coordinate + ',' + y_coordinate + ')' + '>');
 
@@ -129,6 +132,7 @@ public class Spatial_Join {
         long end = new Date().getTime();
         System.out.println("Job took "+(end-start) + "milliseconds");
         System.exit(job.waitForCompletion(true) ? 0 : 1);
+        System.out.println(Spatial_Join.count);
     }
 }
 
