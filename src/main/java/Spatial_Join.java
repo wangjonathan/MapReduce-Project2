@@ -28,16 +28,7 @@ public class Spatial_Join {
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
             String[] str = line.substring(1, line.length() - 1).split(",");
-//            System.out.println(str.length);
-//            if(str.length == 2) {
-                context.write(new Text(str[0]), new Text(str[1]));
-//            } else {
-//                StringBuilder tmp = new StringBuilder();
-//                tmp.append(str[3] + ',' + str[1]).append(str[4] + ',' + str[2]);
-//                coordinate.put(str[0], tmp.toString());
-//            }
-
-//            context.write(new Text(str[0]), new Text(x_range + "," + y_range));
+            context.write(new Text(str[0]), new Text(str[1]));
         }
         protected void setup(Mapper<Object, Text, Text, Text>.Context context)
                 throws IOException, InterruptedException {
@@ -51,7 +42,7 @@ public class Spatial_Join {
                 String line;
                 while ((line = br.readLine()) != null) {
 //                    System.out.println(line.toString());
-                    System.out.println(line);
+//                    System.out.println(line);
                     String[] str = line.substring(1, line.length() - 1).split(",");
                     StringBuilder tmp = new StringBuilder();
                     tmp.append(str[1] + ',' + str[2] + ',' + str[3] + ',' + str[4]);
@@ -63,7 +54,7 @@ public class Spatial_Join {
         }
     }
 
-    public static class SpatialJoinReducer extends Reducer<Text, Text, Text, NullWritable>{
+    public static class SpatialJoinReducer extends Reducer<Text, Text, Text, Text>{
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             count++;
             for(Text text : values) {
@@ -71,13 +62,13 @@ public class Spatial_Join {
                 int y = Integer.valueOf(text.toString());
 //                System.out.println(x + "/" + y);
 //                System.out.println("------------");
-                String tmp = isContained(x, y);
-                if(tmp.length() != 0) {
-                    context.write(new Text(tmp), NullWritable.get());
-                }
+                isContained(context, x, y, key);
+//                if(tmp.length() != 0) {
+//                    context.write(new Text(tmp), NullWritable.get());
+//                }
             }
         }
-        private static String isContained(int x_coordinate, int y_coordinate){
+        private static String isContained(Context context, int x_coordinate, int y_coordinate, Text key) throws IOException, InterruptedException{
             for(Map.Entry<String, String> entry : coordinate.entrySet()) {
                 String[] str = entry.getValue().split(",");
                 int x_left = Integer.valueOf(str[0]);
@@ -90,7 +81,7 @@ public class Spatial_Join {
 //                    System.out.println(x_coordinate + "/" + y_coordinate);
                     StringBuilder res = new StringBuilder();
                     res.append("<" + entry.getKey() + ',' + '(' + x_coordinate + ',' + y_coordinate + ')' + '>');
-
+                    context.write(key, new Text(res.toString()));
                     return res.toString();
                 } else return "";
             }
@@ -119,7 +110,7 @@ public class Spatial_Join {
 
         job.setOutputKeyClass(Text.class);
         job.setNumReduceTasks(2);
-        job.setOutputValueClass(NullWritable.class);
+        job.setOutputValueClass(Text.class);
 
 //        MultipleInputs.addInputPath(job, p1, TextInputFormat.class, SpatialJoinMapper.class);
 //        MultipleInputs.addInputPath(job,p2, TextInputFormat.class, SpatialJoin2Mapper.class);
